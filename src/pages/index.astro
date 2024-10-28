@@ -1,16 +1,87 @@
 ---
-
+import Layout from '../layouts/Layout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Your Name - Digital Business Card">
+  <main>
+    <div class="terminal-container">
+      <div class="terminal-header">
+        <span class="terminal-title">user@system: ~/contact-info</span>
+      </div>
+      <div class="terminal-content">
+        <div class="command-line">
+          <span class="prompt">$</span> 
+          <span class="command">whoami</span>
+        </div>
+        <div class="output">
+          Your Name
+          Software Engineer | Digital Artist | Cyber Enthusiast
+        </div>
+        
+        <div class="command-line">
+          <span class="prompt">$</span> 
+          <span class="command">cat contact.txt</span>
+        </div>
+        <div class="output">
+          Email: your.email@example.com
+          GitHub: github.com/yourusername
+          LinkedIn: linkedin.com/in/yourusername
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .terminal-container {
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid white;
+    background: black;
+  }
+
+  .terminal-header {
+    border-bottom: 1px solid white;
+    padding: 0.5rem;
+  }
+
+  .terminal-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .terminal-content {
+    padding: 1rem;
+  }
+
+  .command-line {
+    margin: 1rem 0;
+  }
+
+  .prompt {
+    color: #00ff00;
+    margin-right: 0.5rem;
+  }
+
+  .command {
+    color: #ffffff;
+  }
+
+  .output {
+    margin-left: 1rem;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+</style>

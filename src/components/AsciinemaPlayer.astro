@@ -1,0 +1,70 @@
+---
+---
+
+<script>
+  import 'asciinema-player/dist/bundle/asciinema-player.css';
+  import AsciinemaPlayer from 'asciinema-player';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const player = AsciinemaPlayer.create(
+      '/assets/intro.cast',
+      document.getElementById('player'),
+      {
+        fit: 'width',
+        theme: 'mono',
+        autoPlay: true,
+        loop: false,
+        controls: false,
+        preload: true,
+      }
+    );
+
+    player.addEventListener('ended', () => {
+      document.getElementById('player-container').classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
+    });
+  });
+</script>
+
+<div id="player-container">
+  <div id="player"></div>
+</div>
+<div id="skip-container">
+  <button id="skip-button">SKIP >></button>
+</div>
+
+<style>
+  #player-container {
+    width: 100%;
+    max-width: 800px;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+  }
+
+  #player-container.fade-out {
+    opacity: 0;
+  }
+
+  #skip-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+  }
+
+  #skip-button {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-family: monospace;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  #skip-button:hover {
+    background: white;
+    color: black;
+  }
+</style>
