@@ -10,12 +10,16 @@
       '/assets/intro.cast',
       document.getElementById('player'),
       {
-        fit: 'width',
-        theme: 'mono',
+        theme: {
+          background: '#121314',
+          foreground: '#ffffff'
+        },
         autoPlay: true,
         loop: false,
         controls: false,
         preload: true,
+        cols: 10,
+        rows: 24
       }
     );
 

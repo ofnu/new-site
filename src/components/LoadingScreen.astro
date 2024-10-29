@@ -1,155 +1,109 @@
 ---
-// LoadingScreen.astro
+// src/components/LoadingScreen.astro
 ---
-<div id="loading-screen" class="loading-screen">
-  <div class="loading-terminal">
-    <div class="loading-header">
-      <span class="loading-title">system: ~/initializing</span>
-    </div>
-    <div class="loading-content">
-      <div class="loading-line">
-        <span class="loading-prompt">$</span>
-        <span class="loading-text">initializing system components...</span>
-        <span class="loading-cursor"></span>
-      </div>
-      <div class="progress-container">
-        <div class="progress-bar"></div>
-      </div>
-    </div>
-  </div>
+<div id="loading-screen">
+  <div id="demo"></div>
 </div>
 
+<link rel="stylesheet" href="/node_modules/asciinema-player/dist/bundle/asciinema-player.css" />
+<script is:inline src="/node_modules/asciinema-player/dist/bundle/asciinema-player.min.js"></script>
+
 <script>
-  const loadingScreen = document.getElementById('loading-screen');
-  
   function handleFirstVisit() {
-    const hasVisited = localStorage.getItem('hasVisited');
+    const loadingScreen = document.getElementById('loading-screen');
+    const hasVisited = sessionStorage.getItem('hasVisited');
     
     if (!hasVisited) {
-      // Show loading screen for first-time visitors
       document.body.style.overflow = 'hidden';
       
-      // Simulate loading progress
-      const progressBar = document.querySelector('.progress-bar');
-      let progress = 0;
-      
-      const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress > 100) {
-          progress = 100;
-          clearInterval(interval);
-          
-          // Add fade out animation
-          setTimeout(() => {
-            loadingScreen.classList.add('fade-out');
-            document.body.style.overflow = 'auto';
-            
-            // Remove loading screen after animation
-            setTimeout(() => {
-              loadingScreen.style.display = 'none';
-            }, 500);
-          }, 500);
-          
-          // Set visited flag
-          localStorage.setItem('hasVisited', 'true');
+      if (typeof AsciinemaPlayer === 'undefined') return;
+
+      const player = AsciinemaPlayer.create(
+        '/assets/knockknock.cast',
+        document.getElementById('demo'),
+        {
+          autoPlay: true,
+          cols: 176,
+          rows: 80,
+          fit: 'width',
+          controls: false,
+          markers: false
         }
-        progressBar.style.width = `${progress}%`;
-      }, 200);
+      );
+
+      player.addEventListener('ended', () => {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+          sessionStorage.setItem('hasVisited', 'true');
+          document.body.style.overflow = 'auto';
+        }, 500);
+      });
+
+      setTimeout(() => {
+        if (loadingScreen.style.display !== 'none') {
+          loadingScreen.classList.add('fade-out');
+          setTimeout(() => {
+            loadingScreen.style.display = 'none';
+            sessionStorage.setItem('hasVisited', 'true');
+            document.body.style.overflow = 'auto';
+          }, 500);
+        }
+      }, 10000);
+
     } else {
-      // Hide loading screen for returning visitors
       loadingScreen.style.display = 'none';
     }
   }
 
-  // Initialize when DOM is loaded
   document.addEventListener('DOMContentLoaded', handleFirstVisit);
 </script>
 
 <style>
-  .loading-screen {
+  #loading-screen {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: black;
+    width: 100vw;
+    height: 100vh;
+    background: #121314;
     z-index: 9999;
+    /* Flexbox approach */
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
   }
 
-  .loading-terminal {
-    width: 80%;
-    max-width: 600px;
-    border: 1px solid #00ff00;
-    background: black;
+  #demo {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Force to center */
+    width: 60%;
   }
 
-  .loading-header {
-    border-bottom: 1px solid #00ff00;
-    padding: 0.5rem;
+  #loading-screen.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
   }
 
-  .loading-title {
-    font-size: 0.9rem;
-    color: #00ff00;
-    opacity: 0.8;
-    font-family: monospace;
+  :global(.asciinema-player) {
+    width: 100% !important;
   }
 
-  .loading-content {
-    padding: 1rem;
+  :global(.asciinema-terminal) {
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
   }
 
-  .loading-line {
-    margin: 1rem 0;
-    font-family: monospace;
-    color: white;
+  :global(.asciinema-player-wrapper) {
+    padding: 0 !important;
   }
 
-  .loading-prompt {
-    color: #00ff00;
-    margin-right: 0.5rem;
-  }
-
-  .loading-cursor {
-    display: inline-block;
-    width: 8px;
-    height: 1rem;
-    background-color: #00ff00;
-    margin-left: 4px;
-    animation: blink 1s infinite;
-  }
-
-  .progress-container {
-    margin-top: 1rem;
-    width: 100%;
-    height: 4px;
-    background-color: #333;
-    border-radius: 2px;
-  }
-
-  .progress-bar {
-    width: 0;
-    height: 100%;
-    background-color: #00ff00;
-    border-radius: 2px;
-    transition: width 0.2s ease-out;
-  }
-
-  @keyframes blink {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .fade-out {
-    animation: fadeOut 0.5s forwards;
-  }
-
-  @keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
+  @media (max-width: 768px) {
+    #demo {
+      width: 80%;
+    }
   }
 </style>

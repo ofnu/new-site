@@ -8,26 +8,25 @@ import LoadingScreen from '../components/LoadingScreen.astro';
   <main>
     <div class="terminal-container">
       <div class="terminal-header">
-        <span class="terminal-title">user@system: ~/contact-info</span>
+        <span class="terminal-title"><span class="prompt">user@noahzoarski.net:</span> ~/contact-info</span>
       </div>
       <div class="terminal-content">
         <div class="command-line">
-          <span class="prompt">$</span> 
+          <span class="blue">$</span> 
           <span class="command">whoami</span>
         </div>
         <div class="output">
-          Your Name
-          Software Engineer | Digital Artist | Cyber Enthusiast
+          Noah Zoarski <br>
+          Programmer | Teaching Assistant | Cybersecurity Enthusiast 
         </div>
         
         <div class="command-line">
-          <span class="prompt">$</span> 
+          <span class="blue">$</span> 
           <span class="command">cat contact.txt</span>
         </div>
         <div class="output">
-          Email: your.email@example.com
-          GitHub: github.com/yourusername
-          LinkedIn: linkedin.com/in/yourusername
+          <a href="https://github.com/ofnu" target="_blank" class="link">github.com/ofnu 🔗</a> <br>
+          <a href="https://linkedin.com/in/noah-zoarski" target="_blank" class="link">linkedin.com/in/noah-zoarski 🔗</a> <br>
         </div>
       </div>
     </div>
@@ -38,7 +37,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
   main {
     margin: 0;
     padding: 0;
-    background-color: black;
+    background-color: '#121314';
     color: white;
     font-family: monospace;
     display: flex;
@@ -51,7 +50,7 @@ import LoadingScreen from '../components/LoadingScreen.astro';
     width: 80%;
     max-width: 600px;
     border: 1px solid white;
-    background: black;
+    background: '#121314';
   }
 
   .terminal-header {
@@ -77,6 +76,10 @@ import LoadingScreen from '../components/LoadingScreen.astro';
     margin-right: 0.5rem;
   }
 
+  .blue {
+    color: #268bd2;
+  }
+
   .command {
     color: #ffffff;
   }
@@ -85,5 +88,14 @@ import LoadingScreen from '../components/LoadingScreen.astro';
     margin-left: 1rem;
     opacity: 0.8;
     line-height: 1.5;
+  }
+  
+  .link {
+    color: #268bd2; /* Adjust the color to your preference */
+    text-decoration: none;
+  }
+
+  .link:hover {
+    text-decoration: underline; /* Optional hover effect */
   }
 </style>
