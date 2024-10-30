@@ -7,8 +7,8 @@
   </div>
 </div>
 
-<link rel="stylesheet" href="/node_modules/asciinema-player/dist/bundle/asciinema-player.css" />
-<script is:inline src="/node_modules/asciinema-player/dist/bundle/asciinema-player.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3.6.3/dist/bundle/asciinema-player.css" />
+<script is:inline src="https://cdn.jsdelivr.net/npm/asciinema-player@3.6.3/dist/bundle/asciinema-player.min.js"></script>
 
 <script>
   function handleFirstVisit() {
@@ -19,7 +19,6 @@
       document.body.style.overflow = 'hidden';
       
       if (typeof AsciinemaPlayer === 'undefined') return;
-
       const player = AsciinemaPlayer.create(
         '/assets/knockknock.cast',
         document.getElementById('demo'),
@@ -32,7 +31,6 @@
           markers: false
         }
       );
-
       player.addEventListener('ended', () => {
         loadingScreen.classList.add('fade-out');
         setTimeout(() => {
@@ -41,7 +39,6 @@
           document.body.style.overflow = 'auto';
         }, 500);
       });
-
       setTimeout(() => {
         if (loadingScreen.style.display !== 'none') {
           loadingScreen.classList.add('fade-out');
@@ -52,12 +49,10 @@
           }, 500);
         }
       }, 10000);
-
     } else {
       loadingScreen.style.display = 'none';
     }
   }
-
   document.addEventListener('DOMContentLoaded', handleFirstVisit);
 </script>
 
@@ -74,7 +69,7 @@
     align-items: center;
     justify-content: center;
   }
-
+  
   .container {
     width: 60%;
     max-width: 600px;
@@ -83,37 +78,46 @@
     justify-content: center;
     align-items: center;
   }
-
+  
   #demo {
-    width: 70%;  /* Increased from 40% to make it larger */
+    width: 70%;
   }
-
+  
   #loading-screen.fade-out {
     opacity: 0;
     transition: opacity 0.5s ease-out;
   }
-
+  
   :global(.asciinema-player) {
     height: 100% !important;
     width: 100% !important;
   }
-
+  
   :global(.asciinema-terminal) {
     padding: 0 !important;
     border: none !important;
     background: transparent !important;
+    display: block !important;
   }
-
+  
   :global(.asciinema-player-wrapper) {
     padding: 0 !important;
   }
 
+  :global(.asciinema-player-wrapper *) {
+    display: none !important;
+  }
+
+  :global(.asciinema-terminal) {
+    display: block !important;
+  }
+  
   @media (max-width: 768px) {
     .container {
       width: 50%;
     }
     #demo {
-      width: 95%;  /* Adjusted for mobile */
+      width: 95%;
     }
   }
 </style>
