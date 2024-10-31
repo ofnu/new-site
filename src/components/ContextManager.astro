@@ -89,68 +89,123 @@ import GalleryContext from './contexts/GalleryContext.astro';
 </style>
 
 <script>
-  // Touch handling variables
-  let touchStartY = 0;
-  let touchStartX = 0;
+  console.log('🚀 SCRIPT STARTING - CONTEXT MANAGER');
   
-  // Context management
-  let currentContext = 1; // 0: above, 1: main, 2: below
-  let isTransitioning = false;
-  
-  // Get all contexts as HTMLElements
-  const contexts = Array.from(document.querySelectorAll('.context')) as HTMLElement[];
-
-  function switchContext(direction: number) {
-    if (isTransitioning) return;
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('🎯 DOM LOADED');
     
-    const newContext = currentContext + direction;
-    if (newContext < 0 || newContext >= contexts.length) return;
-
-    isTransitioning = true;
-    currentContext = newContext;
-
-    contexts.forEach((context, index) => {
-      const offset = (index - currentContext) * 100;
-      context.style.transform = `translateY(${offset}vh)`;
+    // Touch handling variables
+    let touchStartY = 0;
+    let touchStartX = 0;
+    
+    // Context management
+    let currentContext = 1;
+    let isTransitioning = false;
+    
+    // Debug check for contexts
+    const contexts = Array.from(document.querySelectorAll('.context')) as HTMLElement[];
+    console.log('📋 Found contexts:', {
+      count: contexts.length,
+      contexts: contexts
     });
 
-    setTimeout(() => {
-      isTransitioning = false;
-    }, 500);
+    function switchContext(direction: number) {
+      console.log('switchContext called', {
+        direction,
+        currentContext,
+        isTransitioning,
+        contextsLength: contexts.length
+      });
 
-    // Hide scroll indicator after first scroll
-    const indicator = document.querySelector('.scroll-indicator') as HTMLElement;
-    if (indicator) {
-      indicator.style.opacity = '0';
+      if (isTransitioning) {
+        console.log('Switching blocked - in transition');
+        return;
+      }
+      
+      const newContext = currentContext + direction;
+      console.log('Attempting context switch to:', newContext);
+      
+      if (newContext < 0 || newContext >= contexts.length) {
+        console.log('Switch rejected - out of bounds');
+        return;
+      }
+
+      isTransitioning = true;
+      currentContext = newContext;
+      console.log('Starting transition to context:', currentContext);
+
+      contexts.forEach((context, index) => {
+        const offset = (index - currentContext) * 100;
+        context.style.transform = `translateY(${offset}vh)`;
+        console.log(`Setting context ${index} transform:`, `translateY(${offset}vh)`);
+      });
+
+      setTimeout(() => {
+        isTransitioning = false;
+        console.log('Transition complete, ready for next switch');
+      }, 500);
+
+      const indicator = document.querySelector('.scroll-indicator') as HTMLElement;
+      if (indicator) {
+        indicator.style.opacity = '0';
+        console.log('Hide scroll indicator');
+      }
     }
-  }
 
-  // Desktop scroll handling
-  document.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const direction = e.deltaY > 0 ? 1 : -1;
-    switchContext(direction);
-  }, { passive: false });
-
-  // Mobile touch handling
-  document.addEventListener('touchstart', (e) => {
-    touchStartY = e.touches[0].clientY;
-    touchStartX = e.touches[0].clientX;
-  });
-
-  document.addEventListener('touchend', (e) => {
-    const touchEndY = e.changedTouches[0].clientY;
-    const touchEndX = e.changedTouches[0].clientX;
-    
-    const deltaY = touchStartY - touchEndY;
-    const deltaX = touchStartX - touchEndX;
-    
-    // If horizontal swipe is greater than vertical, ignore
-    if (Math.abs(deltaX) > Math.abs(deltaY)) return;
-    
-    if (Math.abs(deltaY) > 50) { // Minimum swipe distance
-      const direction = deltaY > 0 ? 1 : -1;
+    // Desktop scroll handling
+    document.addEventListener('wheel', (e) => {
+      console.log('Wheel event detected!', {
+        deltaY: e.deltaY,
+        currentContext,
+        isTransitioning
+      });
+      
+      e.preventDefault();
+      const direction = e.deltaY > 0 ? 1 : -1;
       switchContext(direction);
-    }
+    }, { passive: false });
+
+    // Mobile touch handling
+    document.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+      console.log('Touch start:', { touchStartY, touchStartX });
+    });
+
+    document.addEventListener('touchend', (e) => {
+      const touchEndY = e.changedTouches[0].clientY;
+      const touchEndX = e.changedTouches[0].clientX;
+      
+      const deltaY = touchStartY - touchEndY;
+      const deltaX = touchStartX - touchEndX;
+      
+      console.log('Touch end:', {
+        deltaY,
+        deltaX,
+        touchEndY,
+        touchEndX
+      });
+      
+      // If horizontal swipe is greater than vertical, ignore
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        console.log('Horizontal swipe detected - ignoring');
+        return;
+      }
+      
+      if (Math.abs(deltaY) > 50) { // Minimum swipe distance
+        const direction = deltaY > 0 ? 1 : -1;
+        console.log('Vertical swipe detected, direction:', direction);
+        switchContext(direction);
+      } else {
+        console.log('Swipe too short - ignoring');
+      }
+    });
+
+    // Log initial state
+    console.log('Initial state:', {
+      currentContext,
+      isTransitioning,
+      contextsCount: contexts.length
+    });
   });
 </script>
