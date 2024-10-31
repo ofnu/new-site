@@ -1,0 +1,46 @@
+---
+// src/components/contexts/ProjectsContext.astro
+import Terminal from '../Terminal.astro';
+---
+
+<Terminal title="user@noahzoarski.net: ~/projects">
+  <div class="command-line">
+    <span class="blue">$</span> 
+    <span class="command">ls -la projects/</span>
+  </div>
+  <div class="output">
+    <div class="project-item">
+      <span class="project-name">cyber-business-card/</span>
+      <span class="project-desc">Terminal-style personal site with ASCII animations</span>
+    </div>
+  </div>
+</Terminal>
+
+<style>
+  .command-line {
+    margin: 1rem 0;
+  }
+
+  .blue {
+    color: #268bd2;
+  }
+
+  .command {
+    color: #ffffff;
+  }
+
+  .output {
+    margin-left: 1rem;
+    opacity: 0.8;
+    line-height: 1.5;
+  }
+
+  .project-item {
+    margin: 0.5rem 0;
+  }
+
+  .project-name {
+    color: #268bd2;
+    margin-right: 1rem;
+  }
+</style>

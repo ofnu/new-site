@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect } from 'react';
 import 'asciinema-player/dist/bundle/asciinema-player.css';
 
@@ -29,5 +30,5 @@ export default function Player({ onComplete }: Props) {
     };
   }, []);
 
-  return <div id="demo" />;
+  return <div id="demo" />;  // This is now properly typed because of React import
 }
