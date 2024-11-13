@@ -1,0 +1,90 @@
+---
+// src/components/ScrollIndicator.astro
+---
+<div class="elevator-container">
+    <div class="elevator-indicator up">
+      <pre class="arrow">^</pre>
+      <div class="label">projects</div>
+    </div>
+    <div class="elevator-indicator down">
+      <div class="label">gallery</div>
+      <pre class="arrow">v</pre>
+    </div>
+  </div>
+  
+  <style>
+    .elevator-container {
+      position: fixed;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      font-family: monospace;
+      pointer-events: none;
+    }
+  
+    .elevator-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      opacity: 0.3;
+      transition: opacity 0.3s ease;
+    }
+  
+    .elevator-indicator.active {
+      opacity: 1;
+      color: #00ff00;
+    }
+  
+    .arrow {
+      font-size: 1.2rem;
+      margin: 0;
+      line-height: 1;
+    }
+  
+    .label {
+      font-size: 0.8rem;
+      text-transform: lowercase;
+      opacity: 0.8;
+    }
+  
+    /* Rotate v to make down arrow */
+    .down .arrow {
+      transform: scaleY(-1);
+    }
+  </style>
+  
+  <script>
+    function updateIndicators() {
+      const container = document.querySelector('.snap-container');
+      if (!container) return;
+  
+      const upIndicator = document.querySelector('.elevator-indicator.up');
+      const downIndicator = document.querySelector('.elevator-indicator.down');
+      
+      // Get current scroll position
+      const currentScroll = container.scrollTop;
+      const maxScroll = container.scrollHeight - container.clientHeight;
+      
+      // Update indicators based on scroll position
+      if (upIndicator) {
+        upIndicator.classList.toggle('active', currentScroll > 0);
+      }
+      
+      if (downIndicator) {
+        downIndicator.classList.toggle('active', currentScroll < maxScroll);
+      }
+    }
+  
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.querySelector('.snap-container');
+      if (container) {
+        container.addEventListener('scroll', updateIndicators);
+        // Initial update
+        updateIndicators();
+      }
+    });
+  </script>

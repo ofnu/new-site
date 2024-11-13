@@ -1,20 +1,22 @@
 ---
-// src/components/ContextManager.astro
+import { ViewTransitions } from 'astro:transitions';
 import ProjectsContext from './contexts/ProjectsContext.astro';
 import GalleryContext from './contexts/GalleryContext.astro';
 ---
 
 <div class="context-manager">
-  <div class="context above">
-    <ProjectsContext />
-  </div>
-  
-  <div class="context main" id="main-context">
-    <slot />
-  </div>
-  
-  <div class="context below">
-    <GalleryContext />
+  <div class="snap-container" id="snap-container">
+    <div class="context" id="projects">
+      <ProjectsContext />
+    </div>
+    
+    <div class="context" id="main">
+      <slot />
+    </div>
+    
+    <div class="context" id="gallery">
+      <GalleryContext />
+    </div>
   </div>
 
   <div class="scroll-indicator">
@@ -32,26 +34,32 @@ import GalleryContext from './contexts/GalleryContext.astro';
     overflow: hidden;
   }
 
-  .context {
-    position: absolute;
-    width: 100%;
+  .snap-container {
     height: 100vh;
-    transition: transform 0.5s ease-out;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+  }
+
+  .context {
+    height: 100vh;
+    width: 100%;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .above {
-    transform: translateY(-100vh);
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .snap-container::-webkit-scrollbar {
+    display: none;
   }
 
-  .main {
-    transform: translateY(0);
-  }
-
-  .below {
-    transform: translateY(100vh);
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .snap-container {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
   }
 
   .scroll-indicator {
@@ -86,126 +94,47 @@ import GalleryContext from './contexts/GalleryContext.astro';
       transform: translateY(-5px) rotate(135deg);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .snap-container {
+      scroll-behavior: auto;
+    }
+    .chevron {
+      animation: none;
+    }
+  }
 </style>
 
 <script>
-  console.log('🚀 SCRIPT STARTING - CONTEXT MANAGER');
-  
+  // Center the view on the main context on load
   document.addEventListener('DOMContentLoaded', () => {
-    console.log('🎯 DOM LOADED');
+    const container = document.querySelector('.snap-container');
+    const mainContext = document.querySelector('#main');
     
-    // Touch handling variables
-    let touchStartY = 0;
-    let touchStartX = 0;
-    
-    // Context management
-    let currentContext = 1;
-    let isTransitioning = false;
-    
-    // Debug check for contexts
-    const contexts = Array.from(document.querySelectorAll('.context')) as HTMLElement[];
-    console.log('📋 Found contexts:', {
-      count: contexts.length,
-      contexts: contexts
-    });
-
-    function switchContext(direction: number) {
-      console.log('switchContext called', {
-        direction,
-        currentContext,
-        isTransitioning,
-        contextsLength: contexts.length
-      });
-
-      if (isTransitioning) {
-        console.log('Switching blocked - in transition');
-        return;
-      }
+    if (container && mainContext) {
+      // Scroll to the main context
+      mainContext.scrollIntoView({ behavior: 'instant' });
       
-      const newContext = currentContext + direction;
-      console.log('Attempting context switch to:', newContext);
-      
-      if (newContext < 0 || newContext >= contexts.length) {
-        console.log('Switch rejected - out of bounds');
-        return;
-      }
-
-      isTransitioning = true;
-      currentContext = newContext;
-      console.log('Starting transition to context:', currentContext);
-
-      contexts.forEach((context, index) => {
-        const offset = (index - currentContext) * 100;
-        context.style.transform = `translateY(${offset}vh)`;
-        console.log(`Setting context ${index} transform:`, `translateY(${offset}vh)`);
-      });
-
-      setTimeout(() => {
-        isTransitioning = false;
-        console.log('Transition complete, ready for next switch');
-      }, 500);
-
-      const indicator = document.querySelector('.scroll-indicator') as HTMLElement;
+      // Optional: Hide scroll indicator after first scroll
+      const indicator = document.querySelector('.scroll-indicator');
       if (indicator) {
-        indicator.style.opacity = '0';
-        console.log('Hide scroll indicator');
+        let scrollTimeout: number;
+        container.addEventListener('scroll', () => {
+          indicator.classList.add('fade-out');
+          clearTimeout(scrollTimeout);
+          scrollTimeout = setTimeout(() => {
+            indicator.classList.remove('fade-out');
+          }, 1000);
+        });
       }
     }
+  });
 
-    // Desktop scroll handling
-    document.addEventListener('wheel', (e) => {
-      console.log('Wheel event detected!', {
-        deltaY: e.deltaY,
-        currentContext,
-        isTransitioning
-      });
-      
-      e.preventDefault();
-      const direction = e.deltaY > 0 ? 1 : -1;
-      switchContext(direction);
-    }, { passive: false });
-
-    // Mobile touch handling
-    document.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-      touchStartX = e.touches[0].clientX;
-      console.log('Touch start:', { touchStartY, touchStartX });
-    });
-
-    document.addEventListener('touchend', (e) => {
-      const touchEndY = e.changedTouches[0].clientY;
-      const touchEndX = e.changedTouches[0].clientX;
-      
-      const deltaY = touchStartY - touchEndY;
-      const deltaX = touchStartX - touchEndX;
-      
-      console.log('Touch end:', {
-        deltaY,
-        deltaX,
-        touchEndY,
-        touchEndX
-      });
-      
-      // If horizontal swipe is greater than vertical, ignore
-      if (Math.abs(deltaX) > Math.abs(deltaY)) {
-        console.log('Horizontal swipe detected - ignoring');
-        return;
-      }
-      
-      if (Math.abs(deltaY) > 50) { // Minimum swipe distance
-        const direction = deltaY > 0 ? 1 : -1;
-        console.log('Vertical swipe detected, direction:', direction);
-        switchContext(direction);
-      } else {
-        console.log('Swipe too short - ignoring');
-      }
-    });
-
-    // Log initial state
-    console.log('Initial state:', {
-      currentContext,
-      isTransitioning,
-      contextsCount: contexts.length
-    });
-  }); // End of DOMContentLoaded
+  // Handle reload/refresh to maintain position on main context
+  window.addEventListener('beforeunload', () => {
+    const mainContext = document.querySelector('#main');
+    if (mainContext) {
+      mainContext.scrollIntoView({ behavior: 'instant' });
+    }
+  });
 </script>
