@@ -26,10 +26,14 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
   <div class="scroll-indicator">
     <div class="indicator up" aria-label="Scroll up">
       <div class="chevron"></div>
-      <span class="label">Previous</span>
+      <div class="label-wrapper">
+        <span class="label">Previous</span>
+      </div>
     </div>
     <div class="indicator down" aria-label="Scroll down">
-      <span class="label">Next</span>
+      <div class="label-wrapper">
+        <span class="label">Next</span>
+      </div>
       <div class="chevron"></div>
     </div>
   </div>
@@ -67,15 +71,13 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     align-items: center;
   }
 
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .snap-container::-webkit-scrollbar {
     display: none;
   }
 
-  /* Hide scrollbar for IE, Edge and Firefox */
   .snap-container {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .scroll-indicator {
@@ -97,7 +99,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     align-items: center;
     gap: 0.5rem;
     opacity: 0;
-    transition: all var(--transition-duration) var(--transition-timing);
+    transition: opacity var(--transition-duration) var(--transition-timing);
   }
 
   .indicator.active {
@@ -124,12 +126,24 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     transform: rotate(135deg);
   }
 
+  .label-wrapper {
+    height: 1.2em;
+    overflow: hidden;
+    position: relative;
+  }
+
   .label {
     font-family: monospace;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.8);
     text-transform: lowercase;
-    transition: all var(--transition-duration) var(--transition-timing);
+    display: block;
+    text-align: center;
+    transition: opacity 0.15s ease;
+  }
+
+  .label.fade-out {
+    opacity: 0;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -142,7 +156,6 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     }
   }
 
-  /* Progressive responsive changes */
   @media (max-width: 1200px) {
     .label {
       font-size: 0.7rem;
@@ -180,67 +193,75 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     projects: 'Projects'
   };
 
+  function updateLabel(indicator: Element, newText: string) {
+    const label = indicator.querySelector('.label');
+    if (!label) return;
+
+    label.classList.add('fade-out');
+
+    setTimeout(() => {
+      label.textContent = newText;
+      label.classList.remove('fade-out');
+    }, 100);
+  }
+
   function updateScrollIndicators() {
     const container = document.querySelector('.snap-container') as HTMLElement;
     const upIndicator = document.querySelector('.indicator.up');
     const downIndicator = document.querySelector('.indicator.down');
-    const upLabel = upIndicator?.querySelector('.label');
-    const downLabel = downIndicator?.querySelector('.label');
     
-    if (!container || !downIndicator || !upIndicator || !upLabel || !downLabel) return;
+    if (!container || !downIndicator || !upIndicator) return;
 
-    // Get all contexts in order
     const contexts = Array.from(container.querySelectorAll('.context'));
     
-    // Find the current context based on scroll position
     const currentIndex = contexts.findIndex(context => {
       const rect = context.getBoundingClientRect();
       return Math.abs(rect.top) < window.innerHeight / 2;
     });
 
-    // If we can't determine current context or we're in transition
     if (currentIndex === -1) {
       upIndicator.classList.remove('active');
       downIndicator.classList.remove('active');
       return;
     }
 
-    // Hide both indicators initially
     upIndicator.classList.remove('active');
     downIndicator.classList.remove('active');
 
-    // Don't show any indicators for secret context
     if (currentIndex === 0) return;
 
-    // Handle up indicator
-    if (currentIndex > 1) { // Don't show up arrow to secret context
+    if (currentIndex > 1) {
       const prevContext = contexts[currentIndex - 1];
       const prevId = prevContext.id;
+      const labelText = CONTEXT_LABELS[prevId] || prevId;
       upIndicator.classList.add('active');
-      upLabel.textContent = CONTEXT_LABELS[prevId] || prevId;
+      const currentLabel = upIndicator.querySelector('.label');
+      if (currentLabel?.textContent !== labelText) {
+        updateLabel(upIndicator, labelText);
+      }
     }
 
-    // Handle down indicator
     if (currentIndex < contexts.length - 1) {
       const nextContext = contexts[currentIndex + 1];
       const nextId = nextContext.id;
+      const labelText = CONTEXT_LABELS[nextId] || nextId;
       downIndicator.classList.add('active');
-      downLabel.textContent = CONTEXT_LABELS[nextId] || nextId;
+      const currentLabel = downIndicator.querySelector('.label');
+      if (currentLabel?.textContent !== labelText) {
+        updateLabel(downIndicator, labelText);
+      }
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Center the view on the main context
     const mainContext = document.querySelector('#main');
     if (mainContext) {
       mainContext.scrollIntoView({ behavior: 'instant' });
     }
 
-    // Set up scroll event listener
     const container = document.querySelector('.snap-container');
     if (container) {
       container.addEventListener('scroll', updateScrollIndicators);
-      // Initial update
       updateScrollIndicators();
     }
   });
