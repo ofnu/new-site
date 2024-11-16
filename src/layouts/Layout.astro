@@ -9,9 +9,9 @@ const { title } = Astro.props;
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Basic Stuff -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' ipapi.co;">
     <title>{title}</title>
 
     <!-- Basic Open Graph -->
@@ -20,9 +20,9 @@ const { title } = Astro.props;
     <meta property="og:image" content="https://noahzoarski.net/thumbnail.png" />
     <meta property="og:url" content="https://noahzoarski.net" />
     
-    <!-- Twitter Card (for Twitter sharing) -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://yourdomain.com/thumbnail.png" />
+    <meta name="twitter:image" content="https://noahzoarski.net/thumbnail.png" />
   </head>
   <body>
     <slot />

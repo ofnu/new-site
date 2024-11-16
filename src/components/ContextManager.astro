@@ -1,13 +1,13 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
-import ProjectsContext from './contexts/ProjectsContext.astro';
+import SecretContext from './contexts/SecretContext.astro';
 import GalleryContext from './contexts/GalleryContext.astro';
+import ProjectsContext from './contexts/ProjectsContext.astro';
 ---
 
 <div class="context-manager">
   <div class="snap-container" id="snap-container">
-    <div class="context" id="projects">
-      <ProjectsContext />
+    <div class="context" id="secret">
+      <SecretContext />
     </div>
     
     <div class="context" id="main">
@@ -17,10 +17,21 @@ import GalleryContext from './contexts/GalleryContext.astro';
     <div class="context" id="gallery">
       <GalleryContext />
     </div>
+
+    <div class="context" id="projects">
+      <ProjectsContext />
+    </div>
   </div>
 
   <div class="scroll-indicator">
-    <div class="chevron"></div>
+    <div class="indicator up" aria-label="Scroll up">
+      <div class="chevron"></div>
+      <span class="label">Previous</span>
+    </div>
+    <div class="indicator down" aria-label="Scroll down">
+      <span class="label">Next</span>
+      <div class="chevron"></div>
+    </div>
   </div>
 </div>
 
@@ -32,6 +43,11 @@ import GalleryContext from './contexts/GalleryContext.astro';
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    --card-width: min(600px, 80vw);
+    --margin-width: calc((100vw - var(--card-width)) / 2);
+    --indicator-width: 3rem;
+    --transition-duration: 0.3s;
+    --transition-timing: ease;
   }
 
   .snap-container {
@@ -64,77 +80,168 @@ import GalleryContext from './contexts/GalleryContext.astro';
 
   .scroll-indicator {
     position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
+    right: calc((var(--margin-width) - var(--indicator-width)) / 2);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
     z-index: 9999;
-    opacity: 1;
-    transition: opacity 0.3s ease;
     pointer-events: none;
+    width: var(--indicator-width);
+  }
+
+  .indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: all var(--transition-duration) var(--transition-timing);
+  }
+
+  .indicator.active {
+    opacity: 0.5;
+  }
+
+  .indicator:hover {
+    opacity: 1;
   }
 
   .chevron {
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
     border-style: solid;
-    border-width: 0.25em 0.25em 0 0;
-    transform: rotate(135deg);
+    border-width: 2px 2px 0 0;
     border-color: rgba(255, 255, 255, 0.8);
-    animation: bounce 2s infinite;
   }
 
-  @keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-      transform: translateY(0) rotate(135deg);
-    }
-    40% {
-      transform: translateY(-10px) rotate(135deg);
-    }
-    60% {
-      transform: translateY(-5px) rotate(135deg);
-    }
+  .indicator.up .chevron {
+    transform: rotate(315deg);
+  }
+
+  .indicator.down .chevron {
+    transform: rotate(135deg);
+  }
+
+  .label {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: lowercase;
+    transition: all var(--transition-duration) var(--transition-timing);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .snap-container {
       scroll-behavior: auto;
     }
-    .chevron {
-      animation: none;
+    
+    .label, .indicator {
+      transition: none;
+    }
+  }
+
+  /* Progressive responsive changes */
+  @media (max-width: 1200px) {
+    .label {
+      font-size: 0.7rem;
+    }
+  }
+
+  @media (max-width: 1000px) {
+    .label {
+      opacity: 0.7;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .label {
+      opacity: 0.4;
+    }
+  }
+
+  @media (max-width: 800px) {
+    .label {
+      opacity: 0;
+      font-size: 0;
+    }
+
+    .indicator {
+      transform: scale(0.9);
     }
   }
 </style>
 
 <script>
-  // Center the view on the main context on load
-  document.addEventListener('DOMContentLoaded', () => {
-    const container = document.querySelector('.snap-container');
-    const mainContext = document.querySelector('#main');
-    
-    if (container && mainContext) {
-      // Scroll to the main context
-      mainContext.scrollIntoView({ behavior: 'instant' });
-      
-      // Optional: Hide scroll indicator after first scroll
-      const indicator = document.querySelector('.scroll-indicator');
-      if (indicator) {
-        let scrollTimeout: number;
-        container.addEventListener('scroll', () => {
-          indicator.classList.add('fade-out');
-          clearTimeout(scrollTimeout);
-          scrollTimeout = setTimeout(() => {
-            indicator.classList.remove('fade-out');
-          }, 1000);
-        });
-      }
-    }
-  });
+  const CONTEXT_LABELS: Record<string, string> = {
+    main: 'Home',
+    gallery: 'Gallery',
+    projects: 'Projects'
+  };
 
-  // Handle reload/refresh to maintain position on main context
-  window.addEventListener('beforeunload', () => {
+  function updateScrollIndicators() {
+    const container = document.querySelector('.snap-container') as HTMLElement;
+    const upIndicator = document.querySelector('.indicator.up');
+    const downIndicator = document.querySelector('.indicator.down');
+    const upLabel = upIndicator?.querySelector('.label');
+    const downLabel = downIndicator?.querySelector('.label');
+    
+    if (!container || !downIndicator || !upIndicator || !upLabel || !downLabel) return;
+
+    // Get all contexts in order
+    const contexts = Array.from(container.querySelectorAll('.context'));
+    
+    // Find the current context based on scroll position
+    const currentIndex = contexts.findIndex(context => {
+      const rect = context.getBoundingClientRect();
+      return Math.abs(rect.top) < window.innerHeight / 2;
+    });
+
+    // If we can't determine current context or we're in transition
+    if (currentIndex === -1) {
+      upIndicator.classList.remove('active');
+      downIndicator.classList.remove('active');
+      return;
+    }
+
+    // Hide both indicators initially
+    upIndicator.classList.remove('active');
+    downIndicator.classList.remove('active');
+
+    // Don't show any indicators for secret context
+    if (currentIndex === 0) return;
+
+    // Handle up indicator
+    if (currentIndex > 1) { // Don't show up arrow to secret context
+      const prevContext = contexts[currentIndex - 1];
+      const prevId = prevContext.id;
+      upIndicator.classList.add('active');
+      upLabel.textContent = CONTEXT_LABELS[prevId] || prevId;
+    }
+
+    // Handle down indicator
+    if (currentIndex < contexts.length - 1) {
+      const nextContext = contexts[currentIndex + 1];
+      const nextId = nextContext.id;
+      downIndicator.classList.add('active');
+      downLabel.textContent = CONTEXT_LABELS[nextId] || nextId;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Center the view on the main context
     const mainContext = document.querySelector('#main');
     if (mainContext) {
       mainContext.scrollIntoView({ behavior: 'instant' });
+    }
+
+    // Set up scroll event listener
+    const container = document.querySelector('.snap-container');
+    if (container) {
+      container.addEventListener('scroll', updateScrollIndicators);
+      // Initial update
+      updateScrollIndicators();
     }
   });
 </script>

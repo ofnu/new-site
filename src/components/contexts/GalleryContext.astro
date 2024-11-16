@@ -1,18 +1,14 @@
 ---
-// src/components/contexts/GalleryContext.astro
+import CallingCard from '../CallingCard.astro';
 ---
-<div class="terminal-container">
-  <div class="terminal-header">
-    <span class="terminal-title"><span class="prompt">user@noahzoarski.net:</span> ~/gallery</span>
+
+<CallingCard title="~/gallery">
+  <div class="command-line">
+    <span class="blue">$</span> 
+    <span class="command">cat ascii-art.txt</span>
   </div>
-  <div class="terminal-content">
-    <div class="command-line">
-      <span class="blue">$</span> 
-      <span class="command">cat ascii-art.txt</span>
-    </div>
-    <div class="output ascii-art">
-      <!-- Example ASCII art - replace with your own! -->
-      <pre>
+  <div class="output ascii-art">
+    <pre>
    _____          _ _               
   / ____|        | | |              
  | |  __  __ _ ||__ |__ _ _ __ _   _ 
@@ -21,62 +17,16 @@
   \_____|\__,_|\__|\__|_|_|   \__, |
                                 __/ |
                                |___/ 
-      </pre>
-    </div>
-    
-    <div class="command-line">
-      <span class="blue">$</span> 
-      <span class="command">echo "Scroll up to return!"</span>
-    </div>
+    </pre>
   </div>
-</div>
+  
+  <div class="command-line">
+    <span class="blue">$</span> 
+    <span class="command">echo "Scroll up to return!"</span>
+  </div>
+</CallingCard>
 
 <style>
-  .terminal-container {
-    width: 80%;
-    max-width: 600px;
-    border: 1px solid white;
-    background: #121314;
-    margin: 0 auto;
-  }
-
-  .terminal-header {
-    border-bottom: 1px solid white;
-    padding: 0.5rem;
-  }
-
-  .terminal-title {
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-
-  .prompt {
-    color: #00ff00;
-    margin-right: 0.5rem;
-  }
-
-  .terminal-content {
-    padding: 1rem;
-  }
-
-  .command-line {
-    margin: 1rem 0;
-  }
-
-  .blue {
-    color: #268bd2;
-  }
-
-  .command {
-    color: #ffffff;
-  }
-
-  .output {
-    margin-left: 1rem;
-    opacity: 0.8;
-    line-height: 1.5;
-  }
-
   .ascii-art {
     font-family: monospace;
     white-space: pre;
@@ -89,4 +39,3 @@
     overflow-x: auto;
   }
 </style>
-

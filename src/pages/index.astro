@@ -2,17 +2,14 @@
 import Layout from '../layouts/Layout.astro';
 import LoadingScreen from '../components/LoadingScreen.astro';
 import ContextManager from '../components/ContextManager.astro';
+import CallingCard from '../components/CallingCard.astro';
 ---
 
 <Layout title="noahzoarski.net">
-<LoadingScreen />
-<ContextManager>
-  <main>
-    <div class="terminal-container">
-      <div class="terminal-header">
-        <span class="terminal-title"><span class="prompt">user@noahzoarski.net:</span> ~/about-me</span>
-      </div>
-      <div class="terminal-content">
+  <LoadingScreen />
+  <ContextManager>
+    <main>
+      <CallingCard title="~/about-me">
         <div class="command-line">
           <span class="blue">$</span> 
           <span class="command">whoami</span>
@@ -30,17 +27,16 @@ import ContextManager from '../components/ContextManager.astro';
           <a href="https://github.com/ofnu" target="_blank" class="link">github.com/ofnu 🔗</a> <br>
           <a href="https://linkedin.com/in/noah-zoarski" target="_blank" class="link">linkedin.com/in/noah-zoarski 🔗</a> <br>
         </div>
-      </div>
-    </div>
-  </main>
-</ContextManager>
+      </CallingCard>
+    </main>
+  </ContextManager>
 </Layout>
 
 <style>
   main {
     margin: 0;
     padding: 0;
-    background-color: '#121314';
+    background-color: #121314;
     color: white;
     font-family: monospace;
     display: flex;
@@ -49,56 +45,12 @@ import ContextManager from '../components/ContextManager.astro';
     min-height: 100vh;
   }
 
-  .terminal-container {
-    width: 80%;
-    max-width: 600px;
-    border: 1px solid white;
-    background: '#121314';
-  }
-
-  .terminal-header {
-    border-bottom: 1px solid white;
-    padding: 0.5rem;
-  }
-
-  .terminal-title {
-    font-size: 0.9rem;
-    opacity: 0.8;
-  }
-
-  .terminal-content {
-    padding: 1rem;
-  }
-
-  .command-line {
-    margin: 1rem 0;
-  }
-
-  .prompt {
-    color: #00ff00;
-    margin-right: 0.5rem;
-  }
-
-  .blue {
-    color: #268bd2;
-  }
-
-  .command {
-    color: #ffffff;
-  }
-
-  .output {
-    margin-left: 1rem;
-    opacity: 0.8;
-    line-height: 1.5;
-  }
-  
   .link {
-    color: #268bd2; /* Adjust the color to your preference */
+    color: #268bd2;
     text-decoration: none;
   }
 
   .link:hover {
-    text-decoration: underline; /* Optional hover effect */
+    text-decoration: underline;
   }
 </style>

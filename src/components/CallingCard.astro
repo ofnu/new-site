@@ -1,0 +1,86 @@
+---
+interface Props {
+  title: string;
+  promptText?: string;
+  className?: string;
+}
+
+const { 
+  title, 
+  promptText = "user@noahzoarski.net", 
+  className = "" 
+} = Astro.props;
+---
+
+<div class={`calling-card ${className}`}>
+  <div class="card-header">
+    <span class="card-title">
+      <span class="prompt">{promptText}</span> <span class="path">{title}</span>
+    </span>
+  </div>
+  <div class="card-content">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .calling-card {
+    width: 80%;
+    max-width: 600px;
+    border: 1px solid white;
+    background: #121314;
+    color: white;
+  }
+
+  .card-header {
+    border-bottom: 1px solid white;
+    padding: .5rem;
+  }
+
+  .card-title {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+
+  .prompt {
+    color: #00ff00;
+  }
+
+  .path {
+    color: white;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-style: solid;
+  }
+
+  /* Command line styling for content */
+  :global(.command-line) {
+    margin: 1rem 0;
+    color: white;
+  }
+
+  :global(.blue) {
+    color: #268bd2;
+  }
+
+  :global(.command) {
+    color: white;
+  }
+
+  :global(.output) {
+    margin-left: 1rem;
+    opacity: 0.8;
+    line-height: 1.5;
+    color: white;
+  }
+
+  :global(.path-like) {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-style: solid;
+  }
+</style>
