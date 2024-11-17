@@ -1,6 +1,6 @@
 ---
 import SecretContext from './contexts/SecretContext.astro';
-import GalleryContext from './contexts/GalleryContext.astro';
+import ShellContext from './contexts/ShellContext.astro';
 import ProjectsContext from './contexts/ProjectsContext.astro';
 ---
 
@@ -14,8 +14,8 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
       <slot />
     </div>
     
-    <div class="context" id="gallery">
-      <GalleryContext />
+    <div class="context" id="shell">
+      <ShellContext />
     </div>
 
     <div class="context" id="projects">
@@ -189,7 +189,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
 <script>
   const CONTEXT_LABELS: Record<string, string> = {
     main: 'Home',
-    gallery: 'Gallery',
+    shell: 'Shell',
     projects: 'Projects'
   };
 

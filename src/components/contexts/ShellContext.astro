@@ -1,0 +1,50 @@
+---
+import CallingCard from '../CallingCard.astro';
+import TerminalEmulator from '../TerminalEmulator.astro';
+---
+
+<CallingCard title="~/shell" className="shell-card">
+  <div class="shell-wrapper">
+    <TerminalEmulator />
+  </div>
+</CallingCard>
+
+<style>
+  :global(.shell-card .card-content) {
+    padding: 0 !important;
+  }
+
+  .shell-wrapper {
+    height: 400px;
+    margin: 0;
+  }
+
+  :global(.terminal) {
+    height: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
+  :global(.terminal-output) {
+    padding: 0.5rem 1rem;
+    max-height: calc(100% - 2.5rem);
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    line-height: 1.2; /* Tighten line spacing */
+  }
+
+  :global(.terminal-output > div) {
+    margin: 0; /* Remove any default margins between lines */
+  }
+
+  :global(.terminal-input-line) {
+    padding: 0 1rem;
+    margin-top: 0.2rem; /* Small gap before prompt */
+  }
+
+  :global(.terminal-output::-webkit-scrollbar) {
+    display: none;
+  }
+</style>
