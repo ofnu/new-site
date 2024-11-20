@@ -24,18 +24,18 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
   </div>
 
   <div class="scroll-indicator">
-    <div class="indicator up" aria-label="Scroll up">
+    <button class="indicator up" aria-label="Scroll to previous section">
       <div class="chevron"></div>
       <div class="label-wrapper">
         <span class="label">Previous</span>
       </div>
-    </div>
-    <div class="indicator down" aria-label="Scroll down">
+    </button>
+    <button class="indicator down" aria-label="Scroll to next section">
       <div class="label-wrapper">
         <span class="label">Next</span>
       </div>
       <div class="chevron"></div>
-    </div>
+    </button>
   </div>
 </div>
 
@@ -89,7 +89,6 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     flex-direction: column;
     gap: 2rem;
     z-index: 9999;
-    pointer-events: none;
     width: var(--indicator-width);
   }
 
@@ -99,7 +98,12 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     align-items: center;
     gap: 0.5rem;
     opacity: 0;
-    transition: opacity var(--transition-duration) var(--transition-timing);
+    transition: all var(--transition-duration) var(--transition-timing);
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    pointer-events: all;
   }
 
   .indicator.active {
@@ -110,12 +114,23 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     opacity: 1;
   }
 
+  .indicator:focus {
+    outline: none;
+    opacity: 1;
+  }
+
+  .indicator:focus-visible {
+    outline: 2px solid var(--accent-blue);
+    border-radius: 4px;
+  }
+
   .chevron {
     width: 12px;
     height: 12px;
     border-style: solid;
     border-width: 2px 2px 0 0;
     border-color: rgba(255, 255, 255, 0.8);
+    transition: transform var(--transition-duration) var(--transition-timing);
   }
 
   .indicator.up .chevron {
@@ -126,6 +141,15 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     transform: rotate(135deg);
   }
 
+  .indicator:hover .chevron {
+    border-color: rgba(255, 255, 255, 1);
+    transform: scale(1.1) rotate(315deg);
+  }
+
+  .indicator.down:hover .chevron {
+    transform: scale(1.1) rotate(135deg);
+  }
+
   .label-wrapper {
     height: 1.2em;
     overflow: hidden;
@@ -133,13 +157,17 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
   }
 
   .label {
-    font-family: monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.8);
     text-transform: lowercase;
     display: block;
     text-align: center;
     transition: opacity 0.15s ease;
+  }
+
+  .indicator:hover .label {
+    color: rgba(255, 255, 255, 1);
   }
 
   .label.fade-out {
@@ -151,7 +179,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
       scroll-behavior: auto;
     }
     
-    .label, .indicator {
+    .label, .indicator, .chevron {
       transition: none;
     }
   }
@@ -193,6 +221,16 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     projects: 'Projects'
   };
 
+  // Helper to get navigable contexts (excluding secret)
+  function getNavigableContexts(): Element[] {
+    const container = document.querySelector('.snap-container');
+    if (!container) return [];
+    
+    return Array.from(container.querySelectorAll('.context')).filter(context => 
+      context.id !== 'secret'
+    );
+  }
+
   function updateLabel(indicator: Element, newText: string) {
     const label = indicator.querySelector('.label');
     if (!label) return;
@@ -205,32 +243,49 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     }, 100);
   }
 
-  function updateScrollIndicators() {
-    const container = document.querySelector('.snap-container') as HTMLElement;
-    const upIndicator = document.querySelector('.indicator.up');
-    const downIndicator = document.querySelector('.indicator.down');
-    
-    if (!container || !downIndicator || !upIndicator) return;
-
-    const contexts = Array.from(container.querySelectorAll('.context'));
+  function scrollToContext(direction: 'up' | 'down') {
+    const contexts = getNavigableContexts();
     
     const currentIndex = contexts.findIndex(context => {
       const rect = context.getBoundingClientRect();
       return Math.abs(rect.top) < window.innerHeight / 2;
     });
 
+    if (currentIndex === -1) return;
+
+    const targetIndex = direction === 'up' 
+      ? Math.max(0, currentIndex - 1)
+      : Math.min(contexts.length - 1, currentIndex + 1);
+
+    contexts[targetIndex].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function updateScrollIndicators() {
+    const upIndicator = document.querySelector('.indicator.up');
+    const downIndicator = document.querySelector('.indicator.down');
+    
+    if (!downIndicator || !upIndicator) return;
+
+    const contexts = getNavigableContexts();
+    
+    const currentIndex = contexts.findIndex(context => {
+      const rect = context.getBoundingClientRect();
+      return Math.abs(rect.top) < window.innerHeight / 2;
+    });
+
+    // Hide both indicators if we're in the secret context
     if (currentIndex === -1) {
       upIndicator.classList.remove('active');
       downIndicator.classList.remove('active');
       return;
     }
 
+    // Reset both indicators
     upIndicator.classList.remove('active');
     downIndicator.classList.remove('active');
 
-    if (currentIndex === 0) return;
-
-    if (currentIndex > 1) {
+    // Show up indicator if we're not at the first navigable context
+    if (currentIndex > 0) {
       const prevContext = contexts[currentIndex - 1];
       const prevId = prevContext.id;
       const labelText = CONTEXT_LABELS[prevId] || prevId;
@@ -241,6 +296,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
       }
     }
 
+    // Show down indicator if we're not at the last navigable context
     if (currentIndex < contexts.length - 1) {
       const nextContext = contexts[currentIndex + 1];
       const nextId = nextContext.id;
@@ -254,6 +310,23 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    const upButton = document.querySelector('.indicator.up');
+    const downButton = document.querySelector('.indicator.down');
+    
+    upButton?.addEventListener('click', () => scrollToContext('up'));
+    downButton?.addEventListener('click', () => scrollToContext('down'));
+
+    // Handle keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        scrollToContext('up');
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        scrollToContext('down');
+      }
+    });
+
     const mainContext = document.querySelector('#main');
     if (mainContext) {
       mainContext.scrollIntoView({ behavior: 'instant' });
