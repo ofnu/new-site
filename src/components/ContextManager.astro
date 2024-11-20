@@ -90,6 +90,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     gap: 2rem;
     z-index: 9999;
     width: var(--indicator-width);
+    pointer-events: none;
   }
 
   .indicator {
@@ -104,14 +105,20 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     padding: 0.5rem;
     cursor: pointer;
     pointer-events: all;
+    visibility: hidden;
   }
 
   .indicator.active {
     opacity: 0.5;
+    visibility: visible;
   }
 
-  .indicator:hover {
+  .indicator.active:hover {
     opacity: 1;
+  }
+
+  .indicator:not(.active):hover {
+    opacity: 0;
   }
 
   .indicator:focus {
@@ -141,12 +148,12 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     transform: rotate(135deg);
   }
 
-  .indicator:hover .chevron {
+  .indicator.active:hover .chevron {
     border-color: rgba(255, 255, 255, 1);
     transform: scale(1.1) rotate(315deg);
   }
 
-  .indicator.down:hover .chevron {
+  .indicator.active.down:hover .chevron {
     transform: scale(1.1) rotate(135deg);
   }
 
@@ -166,7 +173,7 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     transition: opacity 0.15s ease;
   }
 
-  .indicator:hover .label {
+  .indicator.active:hover .label {
     color: rgba(255, 255, 255, 1);
   }
 
@@ -257,6 +264,16 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
       ? Math.max(0, currentIndex - 1)
       : Math.min(contexts.length - 1, currentIndex + 1);
 
+    // Add scroll event listener that will fire once
+    const container = document.querySelector('.snap-container');
+    if (container) {
+      const onScrollEnd = () => {
+        updateScrollIndicators();
+        container.removeEventListener('scrollend', onScrollEnd);
+      };
+      container.addEventListener('scrollend', onScrollEnd);
+    }
+
     contexts[targetIndex].scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -313,8 +330,17 @@ import ProjectsContext from './contexts/ProjectsContext.astro';
     const upButton = document.querySelector('.indicator.up');
     const downButton = document.querySelector('.indicator.down');
     
-    upButton?.addEventListener('click', () => scrollToContext('up'));
-    downButton?.addEventListener('click', () => scrollToContext('down'));
+    upButton?.addEventListener('click', () => {
+      scrollToContext('up');
+      // Force an update after animation
+      setTimeout(updateScrollIndicators, 300); // matches transition duration
+    });
+    
+    downButton?.addEventListener('click', () => {
+      scrollToContext('down');
+      // Force an update after animation
+      setTimeout(updateScrollIndicators, 300); // matches transition duration
+    });
 
     // Handle keyboard navigation
     document.addEventListener('keydown', (e) => {
