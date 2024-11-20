@@ -19,7 +19,7 @@ import CallingCard from '../CallingCard.astro';
   </div>
   <div class="output">
     <div class="project-entry">
-      <span class="blue">-rw-r--r--</span>  1 user user  1.2M Nov 21 13:00 2021 <a href="https://www.cla.purdue.edu/academic/cornerstone/documents/the-cornerstone-review_second-issue_edited.pdf#page=25" class="link">The Cornerstone Review (p.25)</a> - A publication in the Purdue liberal arts journal.
+      <span class="blue">-rw-r--r--</span>  1 user user  1.2M Nov 21 13:00 2021 <a href="https://www.cla.purdue.edu/academic/cornerstone/documents/the-cornerstone-review_second-issue_edited.pdf#page=25" class="link">The Cornerstone Review (p.25)</a>
     </div>
   </div>
 
@@ -29,10 +29,10 @@ import CallingCard from '../CallingCard.astro';
   </div>
   <div class="output">
     <div class="project-entry">
-      <span class="blue">-rw-r--r--</span>  1 user user  1.2M Nov 8 11:30 <a href="/Noah_Zoarski_Gnutella_Network_Analysis[SAMPLE].pdf" class="link">Gnutella P2P Network Analysis</a> - A social network analysis of the GNUtella P2P network.
+      <span class="blue">-rw-r--r--</span>  1 user user  1.2M Nov 8 11:30 <a href="/Noah_Zoarski_Gnutella_Network_Analysis[SAMPLE].pdf" class="link">Gnutella P2P Network Analysis</a>
     </div>
     <div class="project-entry">
-      <span class="blue">-rw-r--r--</span>  1 user user  900K Nov 5 10:45 <a href="/Fingerprinting_Research_Proposal.pdf" class="link">Fingerprinting Research Proposal (Expired)</a> - An expired research proposal of mine.
+      <span class="blue">-rw-r--r--</span>  1 user user  900K Nov 5 10:45 <a href="/Fingerprinting_Research_Proposal.pdf" class="link">Fingerprinting Research Proposal</a>
     </div>
   </div>
 
@@ -69,12 +69,14 @@ import CallingCard from '../CallingCard.astro';
   }
 
   .link {
-    color: var(--link-color);
+    color: var(--accent-blue) !important;
     text-decoration: none;
     transition: text-decoration var(--transition-fast);
+    opacity: 1 !important;
   }
 
   .link:hover {
     text-decoration: underline;
+    opacity: 1 !important;
   }
 </style>

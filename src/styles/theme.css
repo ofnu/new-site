@@ -15,7 +15,7 @@
   
   /* Accent colors */
   --accent-success: #00ff00;  /* Terminal green */
-  --accent-blue: #268bd2;     /* Link blue */
+  --accent-blue: #268bd2 !important;     /* Link blue */
   --accent-error: #ff0000;
   --accent-warning: #ffff00;
   --accent-info: #0088ff;
@@ -43,6 +43,19 @@
   /* Layout */
   --card-width: min(600px, 80vw);
   --margin-width: calc((100vw - var(--card-width)) / 2);
+}
+
+/* Link styling */
+a.link {
+  color: var(--accent-blue) !important;
+  opacity: 1 !important;
+  text-decoration: none;
+  transition: text-decoration var(--transition-fast);
+}
+
+a.link:hover {
+  text-decoration: underline;
+  opacity: 1 !important;
 }
 
 /* Terminal styling */
@@ -146,6 +159,12 @@
   /* UI Elements */
   --border-color: var(--text-primary) !important;
   --link-color: var(--accent-blue) !important;
+
+  /* Force link colors */
+  a.link {
+    color: var(--accent-blue) !important;
+    opacity: 1 !important;
+  }
   
   /* Completely disable Dark Reader's filter */
   filter: none !important;

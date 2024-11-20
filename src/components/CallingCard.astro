@@ -66,7 +66,7 @@ const {
   }
 
   :global(.blue) {
-    color: var(--accent-blue, #268bd2);
+    color: var(--accent-blue, #268bd2) !important;
   }
 
   :global(.command) {
@@ -82,13 +82,15 @@ const {
   }
 
   :global(.link) {
-    color: var(--link-color, #268bd2);
+    color: var(--accent-blue, #268bd2) !important;
     text-decoration: none;
-    transition: text-decoration var(--transition-fast, 0.15s ease);
+    transition: text-decoration var(--transition-fast);
+    opacity: 1 !important;
   }
 
   :global(.link:hover) {
     text-decoration: underline;
+    opacity: 1 !important;
   }
 
   /* Dark Reader overrides */
@@ -129,7 +131,8 @@ const {
     }
 
     :global(.link) {
-      color: var(--link-color) !important;
+      color: var(--accent-blue) !important;
+      opacity: 1 !important;
     }
   }
 </style>
