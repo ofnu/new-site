@@ -4,14 +4,12 @@ interface Props {
   promptText?: string;
   className?: string;
 }
-
 const { 
   title, 
   promptText = "user@noahzoarski.net", 
   className = "" 
 } = Astro.props;
 ---
-
 <div class={`calling-card ${className}`}>
   <div class="card-header">
     <span class="card-title">
@@ -24,47 +22,24 @@ const {
 </div>
 
 <style>
-  /* Global styles for command line inside CallingCard */
-  :global(.command-line) {
-    margin: 1rem 0;
-    color: white;
-    font-size: 0.9rem; /* Set a consistent font size */
-  }
-
-  :global(.blue) {
-    color: #268bd2;
-  }
-
-  :global(.command) {
-    color: white;
-    font-size: 0.9rem; /* Ensure command text has a consistent font size */
-  }
-
-  :global(.output) {
-    margin-left: 1rem;
-    opacity: 0.8;
-    line-height: 1.5;
-    color: white;
-    font-size: 0.9rem; /* Same font size for output text */
-  }
-
-  /* Other calling card styles */
   .calling-card {
-    width: 80%;
+    width: var(--card-width, 80%);
     max-width: 600px;
-    border: 1px solid white;
-    background: #121314;
-    color: white;
+    border: 1px solid var(--border-color, #ffffff);
+    background: var(--bg-primary, #121314);
+    color: var(--text-primary, #ffffff);
+    margin: 0 auto;
   }
 
   .card-header {
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid var(--border-color, #ffffff);
     padding: .5rem;
   }
 
   .card-title {
     font-size: 0.9rem;
     opacity: 0.8;
+    font-family: var(--font-mono);
   }
 
   .card-content {
@@ -72,13 +47,89 @@ const {
   }
 
   .prompt {
-    color: #00ff00;
+    color: var(--text-success, #00ff00);
   }
 
   .path {
-    color: white;
+    color: var(--text-primary, #ffffff);
     text-decoration: underline;
     text-underline-offset: 3px;
     text-decoration-style: solid;
+  }
+
+  /* Global styles for command line inside CallingCard */
+  :global(.command-line) {
+    margin: 1rem 0;
+    color: var(--text-primary, #ffffff);
+    font-size: 0.9rem;
+    font-family: var(--font-mono);
+  }
+
+  :global(.blue) {
+    color: var(--accent-blue, #268bd2);
+  }
+
+  :global(.command) {
+    color: var(--text-primary, #ffffff);
+    font-size: 0.9rem;
+  }
+
+  :global(.output) {
+    margin-left: 1rem;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    line-height: 1.5;
+    font-size: 0.9rem;
+  }
+
+  :global(.link) {
+    color: var(--link-color, #268bd2);
+    text-decoration: none;
+    transition: text-decoration var(--transition-fast, 0.15s ease);
+  }
+
+  :global(.link:hover) {
+    text-decoration: underline;
+  }
+
+  /* Dark Reader overrides */
+  :global([data-darkreader-scheme="dark"]) {
+    .calling-card {
+      border: 1px solid var(--border-color) !important;
+      border-color: var(--border-color) !important;
+      background: var(--bg-primary) !important;
+    }
+    
+    .card-header {
+      border-bottom: 1px solid var(--border-color) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .prompt {
+      color: var(--text-success) !important;
+    }
+
+    .path {
+      color: var(--text-primary) !important;
+    }
+
+    :global(.command-line) {
+      color: var(--text-primary) !important;
+    }
+
+    :global(.blue) {
+      color: var(--accent-blue) !important;
+    }
+
+    :global(.command) {
+      color: var(--text-primary) !important;
+    }
+
+    :global(.output) {
+      color: var(--text-secondary) !important;
+    }
+
+    :global(.link) {
+      color: var(--link-color) !important;
+    }
   }
 </style>

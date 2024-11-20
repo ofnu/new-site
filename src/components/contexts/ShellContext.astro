@@ -24,6 +24,7 @@ import TerminalEmulator from '../TerminalEmulator.astro';
     width: 100% !important;
     padding: 0 !important;
     overflow: hidden;
+    background: var(--bg-primary) !important;
   }
 
   :global(.terminal-output) {
@@ -32,19 +33,54 @@ import TerminalEmulator from '../TerminalEmulator.astro';
     overflow-y: scroll;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    line-height: 1.2; /* Tighten line spacing */
+    line-height: 1.2;
+    color: var(--terminal-output);
   }
 
   :global(.terminal-output > div) {
-    margin: 0; /* Remove any default margins between lines */
+    margin: 0;
   }
 
   :global(.terminal-input-line) {
     padding: 0 1rem;
-    margin-top: 0.2rem; /* Small gap before prompt */
+    margin-top: 0.2rem;
+    color: var(--terminal-command);
+    background: var(--bg-primary) !important;
   }
 
   :global(.terminal-output::-webkit-scrollbar) {
     display: none;
+  }
+
+  /* Dark Reader overrides */
+  :global([data-darkreader-scheme="dark"]) {
+    .shell-wrapper {
+      background: var(--bg-primary) !important;
+    }
+
+    :global(.terminal),
+    :global(.terminal-input-line) {
+      background: var(--bg-primary) !important;
+      color: var(--text-primary) !important;
+    }
+
+    :global(.terminal-input) {
+      background: transparent !important;
+      color: var(--text-primary) !important;
+    }
+
+    :global(.terminal-output) {
+      color: var(--terminal-output) !important;
+    }
+
+    :global(.prompt) {
+      color: var(--terminal-prompt) !important;
+    }
+
+    /* Ensure proper colors for command output */
+    :global(.success) { color: var(--text-success) !important; }
+    :global(.error) { color: var(--text-error) !important; }
+    :global(.info) { color: var(--text-info) !important; }
+    :global(.warning) { color: var(--text-warning) !important; }
   }
 </style>

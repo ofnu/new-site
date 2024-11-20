@@ -36,21 +36,22 @@ import CallingCard from '../components/CallingCard.astro';
   main {
     margin: 0;
     padding: 0;
-    background-color: #121314;
-    color: white;
-    font-family: monospace;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-mono);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
   }
 
-  .link {
-    color: #268bd2;
+  :global(.link) {
+    color: var(--link-color);
     text-decoration: none;
+    transition: text-decoration var(--transition-fast);
   }
 
-  .link:hover {
+  :global(.link:hover) {
     text-decoration: underline;
   }
 </style>

@@ -8,13 +8,11 @@ import CallingCard from '../CallingCard.astro';
     <span class="command">ls -la projects/</span>
   </div>
   <div class="output">
-    <!-- Project 1 -->
     <div class="project-entry">
       <span class="blue">drwxr-xr-x</span>  2 user user  4.0K Nov 15 21:30 <a href="https://github.com/ofnu/super-simple-ssh" class="link">super-simple-ssh</a>
     </div>
   </div>
 
-  <!-- Publications Section -->
   <div class="command-line">
     <span class="blue">$</span> 
     <span class="command">ls -la publications/</span>
@@ -25,7 +23,6 @@ import CallingCard from '../CallingCard.astro';
     </div>
   </div>
 
-  <!-- Sample Writings Section -->
   <div class="command-line">
     <span class="blue">$</span> 
     <span class="command">ls -la writings/</span>
@@ -39,7 +36,6 @@ import CallingCard from '../CallingCard.astro';
     </div>
   </div>
 
-  <!-- Labs -->
   <div class="command-line">
     <span class="blue">$</span> 
     <span class="command">echo "Ask me about my labs"</span>
@@ -49,17 +45,17 @@ import CallingCard from '../CallingCard.astro';
 <style>
   .command-line {
     margin: 1rem 0;
-    color: white;
-    font-size: 0.9rem; /* Reduced font size */
+    color: var(--text-primary);
+    font-size: 0.9rem;
   }
 
   .blue {
-    color: #268bd2;
+    color: var(--accent-blue);
   }
 
   .command {
-    color: white;
-    font-size: 0.9rem; /* Ensuring the command text is consistent */
+    color: var(--text-primary);
+    font-size: 0.9rem;
   }
 
   .output {
@@ -68,13 +64,14 @@ import CallingCard from '../CallingCard.astro';
 
   .project-entry {
     margin: 0.5rem 0;
-    font-family: monospace;
-    font-size: 0.9rem; /* Adjust the font size for consistency */
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
   }
 
   .link {
-    color: #268bd2;
+    color: var(--link-color);
     text-decoration: none;
+    transition: text-decoration var(--transition-fast);
   }
 
   .link:hover {

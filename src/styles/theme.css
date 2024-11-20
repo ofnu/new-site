@@ -1,0 +1,189 @@
+/* Base theme declaration - Dark mode by default */
+:root {
+  color-scheme: dark; /* Signals to browsers this is a dark theme */
+  background-color: rgb(18, 19, 20);
+  
+  /* Core colors */
+  --bg-primary: rgb(18, 19, 20);
+  --bg-secondary: #1a1b1c;
+  --bg-terminal: var(--bg-primary);
+  
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  /* Accent colors */
+  --accent-success: #00ff00;  /* Terminal green */
+  --accent-blue: #268bd2;     /* Link blue */
+  --accent-error: #ff0000;
+  --accent-warning: #ffff00;
+  --accent-info: #0088ff;
+  
+  /* Terminal specific */
+  --terminal-prompt: var(--accent-success);
+  --terminal-command: var(--text-primary);
+  --terminal-output: var(--text-secondary);
+  
+  /* UI Elements */
+  --border-color: var(--text-primary);
+  --link-color: var(--accent-blue);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-track: rgba(0, 0, 0, 0.2);
+  
+  /* Typography */
+  --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+    "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+    "Fira Mono", "Courier New", monospace;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  
+  /* Layout */
+  --card-width: min(600px, 80vw);
+  --margin-width: calc((100vw - var(--card-width)) / 2);
+}
+
+/* Terminal styling */
+.terminal {
+  background-color: var(--bg-terminal);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.terminal-prompt {
+  color: var(--terminal-prompt);
+}
+
+.terminal-command {
+  color: var(--terminal-command);
+}
+
+.terminal-output {
+  color: var(--terminal-output);
+}
+
+/* Asciinema terminal styling */
+.asciinema-player,
+.asciinema-terminal,
+.asciinema-player-wrapper,
+.asciinema-player .asciinema-terminal {
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  display: block !important;
+  opacity: 1 !important;
+  transition: opacity 0.5s ease-out !important;
+  border-width: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.asciinema-player *:not(.asciinema-terminal) {
+  display: none !important;
+}
+
+.asciinema-terminal {
+  display: block !important;
+}
+
+.fade-out .asciinema-terminal {
+  opacity: 0 !important;
+}
+
+/* Custom scrollbar styling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+/* Dark Reader overrides */
+[data-darkreader-scheme="dark"] {
+  /* Disable Dark Reader's color transformations */
+  --darkreader-neutral-background: none !important;
+  --darkreader-neutral-text: none !important;
+  --darkreader-selection-background: none !important;
+  --darkreader-border-color: none !important;
+  
+  /* Force our colors */
+  background-color: rgb(18, 19, 20) !important;
+  color-scheme: dark !important;
+
+  /* Core colors */
+  --bg-primary: rgb(18, 19, 20) !important;
+  --bg-secondary: #1a1b1c !important;
+  --text-primary: #ffffff !important;
+  --text-secondary: rgba(255, 255, 255, 0.7) !important;
+  --text-muted: rgba(255, 255, 255, 0.5) !important;
+  
+  /* Accent colors */
+  --accent-success: #00ff00 !important;
+  --accent-blue: #268bd2 !important;
+  --accent-error: #ff0000 !important;
+  --accent-warning: #ffff00 !important;
+  --accent-info: #0088ff !important;
+  
+  /* Terminal specific */
+  --terminal-prompt: var(--accent-success) !important;
+  --terminal-command: var(--text-primary) !important;
+  --terminal-output: var(--text-secondary) !important;
+  
+  /* UI Elements */
+  --border-color: var(--text-primary) !important;
+  --link-color: var(--accent-blue) !important;
+  
+  /* Completely disable Dark Reader's filter */
+  filter: none !important;
+  -webkit-filter: none !important;
+
+  /* Ensure all background elements stay dark */
+  * {
+    background-color: var(--bg-primary) !important;
+  }
+
+  /* Elements that need transparency */
+  .terminal-input,
+  .asciinema-terminal,
+  .asciinema-player .asciinema-terminal {
+    background: transparent !important;
+  }
+
+  /* Ensure asciinema stays borderless and transparent */
+  .asciinema-player,
+  .asciinema-terminal,
+  .asciinema-player-wrapper,
+  .asciinema-player .asciinema-terminal {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+}
+
+/* For sites with aggressive dark mode detection */
+@media (prefers-color-scheme: dark) {
+  :root {
+    background-color: rgb(18, 19, 20) !important;
+  }
+}
+
+/* Media queries */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
