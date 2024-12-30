@@ -17,3 +17,9 @@ pnpm-debug.log*
 
 # macOS-specific files
 .DS_Store
+
+# Assets
+public/Fingerprinting_Research_Proposal.pdf
+public/Noah_Zoarski_Gnutella_Network_Analysis[SAMPLE].pdf
+public/thumbnail.png
+.aider*
