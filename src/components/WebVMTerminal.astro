@@ -1,0 +1,139 @@
+---
+---
+
+<div class="webvm-container">
+  <div id="webvm-terminal"></div>
+  <div id="webvm-status" class="status-bar"></div>
+</div>
+
+<style>
+  .webvm-container {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-terminal);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #webvm-terminal {
+    flex: 1;
+    min-height: 0;
+    padding: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.2;
+  }
+
+  .status-bar {
+    height: 24px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    padding: 0 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+</style>
+
+<script>
+  import { WebVM } from '@webvm/runtime';
+  import { Terminal } from 'xterm';
+  import { FitAddon } from 'xterm-addon-fit';
+  import 'xterm/css/xterm.css';
+
+  class WebVMTerminal {
+    private vm: any;
+    private terminal: Terminal;
+    private fitAddon: FitAddon;
+    private statusElement: HTMLElement | null;
+
+    constructor() {
+      this.statusElement = document.getElementById('webvm-status');
+      this.terminal = new Terminal({
+        theme: {
+          background: '#121314',
+          foreground: '#ffffff'
+        },
+        fontFamily: 'var(--font-mono)',
+        fontSize: 14,
+        cursorBlink: true
+      });
+      
+      this.fitAddon = new FitAddon();
+      this.terminal.loadAddon(this.fitAddon);
+      
+      this.initializeTerminal();
+    }
+
+    private async initializeTerminal() {
+      const terminalElement = document.getElementById('webvm-terminal');
+      if (!terminalElement) return;
+
+      this.terminal.open(terminalElement);
+      this.fitAddon.fit();
+
+      try {
+        this.updateStatus('Initializing WebVM...');
+        
+        // Initialize WebVM
+        this.vm = await WebVM.create({
+          terminal: this.terminal,
+          filesystem: '/webvm/debian-minimal.ext2',
+          memory: 256,
+          networking: true,
+          persistent: true
+        });
+
+        // Mount CTF files
+        await this.mountCTFFiles();
+        
+        this.updateStatus('Ready');
+      } catch (error) {
+        console.error('WebVM initialization failed:', error);
+        this.updateStatus('Failed to initialize WebVM', true);
+      }
+    }
+
+    private async mountCTFFiles() {
+      try {
+        // Mount challenge files
+        await this.vm.mount('/webvm/ctf/.bashrc', '/home/user/.bashrc');
+        
+        // Create and populate identity file
+        const identity = await this.generateIdentity();
+        await this.vm.writeFile('/home/user/.identity', identity);
+        
+        // Set proper permissions
+        await this.vm.exec('chmod 644 /home/user/.identity');
+        await this.vm.exec('chmod +x /home/user/.bashrc');
+      } catch (error) {
+        console.error('Failed to mount CTF files:', error);
+      }
+    }
+
+    private async generateIdentity() {
+      // This will be replaced with actual CreepJS integration
+      return `Generated Identity
+User Agent: ${navigator.userAgent}
+Platform: ${navigator.platform}
+Language: ${navigator.language}
+Screen: ${window.screen.width}x${window.screen.height}
+Time: ${new Date().toISOString()}`;
+    }
+
+    private updateStatus(message: string, isError: boolean = false) {
+      if (this.statusElement) {
+        this.statusElement.textContent = message;
+        this.statusElement.style.color = isError ? 'var(--text-error)' : 'var(--text-secondary)';
+      }
+    }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new WebVMTerminal();
+  });
+</script>
