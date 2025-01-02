@@ -44,96 +44,73 @@
   import { FitAddon } from 'xterm-addon-fit';
   import 'xterm/css/xterm.css';
 
-  class WebVMTerminal {
-    private vm: any;
-    private terminal: Terminal;
-    private fitAddon: FitAddon;
-    private statusElement: HTMLElement | null;
+  let webcontainerInstance: WebContainer;
+  
+  window.addEventListener('load', async () => {
+    const terminal = new Terminal({
+      convertEol: true,
+      fontFamily: 'var(--font-mono)',
+      fontSize: 14,
+      theme: {
+        background: '#121314',
+        foreground: '#ffffff',
+        cursor: '#ffffff'
+      }
+    });
 
-    constructor() {
-      this.statusElement = document.getElementById('webvm-status');
-      this.terminal = new Terminal({
-        theme: {
-          background: '#121314',
-          foreground: '#ffffff'
+    const terminalElement = document.getElementById('webvm-terminal');
+    if (!terminalElement) return;
+
+    terminal.open(terminalElement);
+
+    const fitAddon = new FitAddon();
+    terminal.loadAddon(fitAddon);
+    fitAddon.fit();
+
+    try {
+      // Initialize the WebContainer
+      webcontainerInstance = await WebContainer.boot();
+      
+      // Mount the files
+      await webcontainerInstance.mount({
+        'index.js': {
+          file: {
+            contents: `
+              console.log("WebContainer initialized!");
+              process.exit(0);
+            `,
+          },
         },
-        fontFamily: 'var(--font-mono)',
-        fontSize: 14,
-        cursorBlink: true
       });
-      
-      this.fitAddon = new FitAddon();
-      this.terminal.loadAddon(this.fitAddon);
-      
-      this.initializeTerminal();
+
+      // Start a shell process
+      const shellProcess = await webcontainerInstance.spawn('jsh', {
+        terminal: {
+          cols: terminal.cols,
+          rows: terminal.rows,
+        },
+      });
+
+      // Pipe the shell process to the terminal
+      shellProcess.output.pipeTo(
+        new WritableStream({
+          write(data) {
+            terminal.write(data);
+          },
+        })
+      );
+
+      // Pipe terminal input to the shell process
+      const input = shellProcess.input.getWriter();
+      terminal.onData((data) => {
+        input.write(data);
+      });
+
+      document.getElementById('webvm-status').textContent = 'Ready';
+    } catch (error) {
+      console.error('Failed to initialize WebContainer:', error);
+      document.getElementById('webvm-status').textContent = 'Failed to initialize';
+      document.getElementById('webvm-status').style.color = 'var(--text-error)';
     }
-
-    private async initializeTerminal() {
-      const terminalElement = document.getElementById('webvm-terminal');
-      if (!terminalElement) return;
-
-      this.terminal.open(terminalElement);
-      this.fitAddon.fit();
-
-      try {
-        this.updateStatus('Initializing WebVM...');
-        
-        // Initialize WebVM
-        this.vm = await WebVM.create({
-          terminal: this.terminal,
-          filesystem: '/webvm/debian-minimal.ext2',
-          memory: 256,
-          networking: true,
-          persistent: true
-        });
-
-        // Mount CTF files
-        await this.mountCTFFiles();
-        
-        this.updateStatus('Ready');
-      } catch (error) {
-        console.error('WebVM initialization failed:', error);
-        this.updateStatus('Failed to initialize WebVM', true);
-      }
-    }
-
-    private async mountCTFFiles() {
-      try {
-        // Mount challenge files
-        await this.vm.mount('/webvm/ctf/.bashrc', '/home/user/.bashrc');
-        
-        // Create and populate identity file
-        const identity = await this.generateIdentity();
-        await this.vm.writeFile('/home/user/.identity', identity);
-        
-        // Set proper permissions
-        await this.vm.exec('chmod 644 /home/user/.identity');
-        await this.vm.exec('chmod +x /home/user/.bashrc');
-      } catch (error) {
-        console.error('Failed to mount CTF files:', error);
-      }
-    }
-
-    private async generateIdentity() {
-      // This will be replaced with actual CreepJS integration
-      return `Generated Identity
-User Agent: ${navigator.userAgent}
-Platform: ${navigator.platform}
-Language: ${navigator.language}
-Screen: ${window.screen.width}x${window.screen.height}
-Time: ${new Date().toISOString()}`;
-    }
-
-    private updateStatus(message: string, isError: boolean = false) {
-      if (this.statusElement) {
-        this.statusElement.textContent = message;
-        this.statusElement.style.color = isError ? 'var(--text-error)' : 'var(--text-secondary)';
-      }
-    }
-  }
-
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    new WebVMTerminal();
   });
 </script>
