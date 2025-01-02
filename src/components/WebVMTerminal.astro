@@ -75,10 +75,7 @@
       
       console.log('Booting WebContainer...');
       // Initialize the WebContainer with proper options
-      webcontainerInstance = await WebContainer.boot({
-        workdirPath: '/home/user',
-        mountPoints: ['/home/user']
-      });
+      webcontainerInstance = await WebContainer.boot();
       
       console.log('Mounting files...');
       // Mount the files with proper structure
