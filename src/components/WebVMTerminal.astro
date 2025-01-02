@@ -73,18 +73,21 @@
       
       // Mount the files
       await webcontainerInstance.mount({
-        'index.js': {
+        'package.json': {
           file: {
             contents: `
-              console.log("WebContainer initialized!");
-              process.exit(0);
-            `,
-          },
-        },
+              {
+                "name": "example-app",
+                "type": "module",
+                "dependencies": {}
+              }
+            `
+          }
+        }
       });
 
       // Start a shell process
-      const shellProcess = await webcontainerInstance.spawn('jsh', {
+      const shellProcess = await webcontainerInstance.spawn('sh', {
         terminal: {
           cols: terminal.cols,
           rows: terminal.rows,
