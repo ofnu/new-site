@@ -69,6 +69,10 @@
     fitAddon.fit();
 
     try {
+      if (!crossOriginIsolated) {
+        throw new Error('Cross-Origin Isolation must be enabled');
+      }
+      
       console.log('Booting WebContainer...');
       // Initialize the WebContainer with proper options
       webcontainerInstance = await WebContainer.boot({
