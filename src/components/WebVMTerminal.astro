@@ -46,7 +46,8 @@
 
   let webcontainerInstance: WebContainer;
   
-  window.addEventListener('load', async () => {
+  // Initialize WebContainer when the component mounts
+  async function initializeWebContainer() {
     const terminal = new Terminal({
       convertEol: true,
       fontFamily: 'var(--font-mono)',
@@ -68,20 +69,27 @@
     fitAddon.fit();
 
     try {
-      // Initialize the WebContainer
-      webcontainerInstance = await WebContainer.boot();
+      console.log('Booting WebContainer...');
+      // Initialize the WebContainer with proper options
+      webcontainerInstance = await WebContainer.boot({
+        workdirPath: '/home/user',
+        mountPoints: ['/home/user']
+      });
       
-      // Mount the files
+      console.log('Mounting files...');
+      // Mount the files with proper structure
       await webcontainerInstance.mount({
-        'package.json': {
-          file: {
-            contents: `
-              {
-                "name": "example-app",
-                "type": "module",
-                "dependencies": {}
+        'home': {
+          directory: {
+            'user': {
+              directory: {
+                '.bashrc': {
+                  file: {
+                    contents: 'PS1="\\w $ "\n'
+                  }
+                }
               }
-            `
+            }
           }
         }
       });
@@ -112,8 +120,13 @@
       document.getElementById('webvm-status').textContent = 'Ready';
     } catch (error) {
       console.error('Failed to initialize WebContainer:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      terminal.write(`\r\nWebContainer initialization failed: ${errorMessage}\r\n`);
       document.getElementById('webvm-status').textContent = 'Failed to initialize';
       document.getElementById('webvm-status').style.color = 'var(--text-error)';
     }
-  });
+  }
+
+  // Call initialize function when component mounts
+  window.addEventListener('load', initializeWebContainer);
 </script>
