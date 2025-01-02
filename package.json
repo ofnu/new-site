@@ -16,12 +16,12 @@
     "@astrojs/tailwind": "^5.1.2",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@webcontainer/api": "^1.5.1",
     "asciinema-player": "^3.8.1",
     "astro": "^4.16.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.6.3",
-    "@webcontainer/api": "^1.1.8",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.7.0"
   },
