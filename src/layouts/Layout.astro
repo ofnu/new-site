@@ -42,7 +42,9 @@ const { title } = Astro.props;
 
 <style is:global>
   :root {
-    font-family: var(--font-mono);
+    --font-mono: ui-monospace, Menlo, Monaco, "Cascadia Mono", "Segoe UI Mono",
+      "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
+      "Fira Mono", "Courier New", monospace;
   }
   
   html, body {
@@ -50,5 +52,10 @@ const { title } = Astro.props;
     padding: 0;
     min-height: 100vh;
     background-color: rgb(18, 19, 20);
+    font-family: var(--font-mono);
+  }
+
+  * {
+    font-family: inherit;
   }
 </style>
