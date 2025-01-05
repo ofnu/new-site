@@ -1,6 +1,15 @@
 import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import path from 'path';
+import { execSync } from 'child_process';
+
+// Add packages you want pre-installed
+const PACKAGES_TO_INSTALL = [
+  'vim',
+  'git',
+  'python3',
+  // Add more packages as needed
+];
 
 const WEBVM_FILES = {
   debian: 'https://webvm.io/fs/debian-minimal.ext2',
@@ -14,6 +23,43 @@ async function downloadFile(url, destination) {
   await fs.writeFile(destination, buffer);
 }
 
+async function customizeImage(imagePath) {
+  const mountPoint = '/mnt/webvm-temp';
+  
+  console.log('Customizing debian image...');
+  
+  try {
+    // Create mount point
+    execSync(`sudo mkdir -p ${mountPoint}`);
+    
+    // Mount the image
+    execSync(`sudo mount -o loop ${imagePath} ${mountPoint}`);
+    
+    // Prepare chroot environment
+    execSync(`sudo cp /etc/resolv.conf ${mountPoint}/etc/resolv.conf`);
+    
+    // Install packages
+    const installCommand = `sudo chroot ${mountPoint} /bin/bash -c "apt-get update && apt-get install -y ${PACKAGES_TO_INSTALL.join(' ')}"`;
+    execSync(installCommand);
+    
+    // Cleanup
+    execSync(`sudo umount ${mountPoint}`);
+    execSync(`sudo rm -rf ${mountPoint}`);
+    
+    console.log('Image customization completed successfully!');
+  } catch (error) {
+    console.error('Error customizing image:', error);
+    // Ensure cleanup even if there's an error
+    try {
+      execSync(`sudo umount ${mountPoint}`);
+      execSync(`sudo rm -rf ${mountPoint}`);
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+    throw error;
+  }
+}
+
 async function main() {
   const publicDir = path.join(process.cwd(), 'public', 'webvm');
   
@@ -23,7 +69,13 @@ async function main() {
   // Download WebVM files
   for (const [key, url] of Object.entries(WEBVM_FILES)) {
     const filename = path.basename(url);
-    await downloadFile(url, path.join(publicDir, filename));
+    const filePath = path.join(publicDir, filename);
+    await downloadFile(url, filePath);
+    
+    // If this is the debian image, customize it
+    if (key === 'debian') {
+      await customizeImage(filePath);
+    }
   }
 
   // Create CTF challenge files
