@@ -5,7 +5,7 @@ import { execSync } from 'child_process';
 
 
 const WEBVM_FILES = {
-  debian: 'https://github.com/leaningtech/webvm/releases/download/ext2_image/debian_mini_20230519_5022088024.ext2',
+  debian: 'https://github.com/leaningtech/webvm/releases/download/ext2_image/debian_large_20230522_5044875331.ext2',
   config: 'https://webvm.io/config/default.json'
 };
 
