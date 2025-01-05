@@ -22,7 +22,7 @@ fi
 `;
 
 const WEBVM_FILES = {
-  debian: 'https://webvm.io/fs/debian-minimal.ext2',
+  debian: 'https://github.com/leaningtech/webvm/releases/download/ext2_image/debian_mini_20230519_5022088024.ext2',
   config: 'https://webvm.io/config/default.json'
 };
 
