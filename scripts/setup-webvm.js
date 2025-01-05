@@ -3,23 +3,6 @@ import fs from 'fs/promises';
 import path from 'path';
 import { execSync } from 'child_process';
 
-// Packages to install on first boot
-const PACKAGES_TO_INSTALL = [
-  'vim',
-  'git',
-  'python3',
-  // Add more packages as needed
-];
-
-// Create startup script to install packages
-const STARTUP_SCRIPT = `
-#!/bin/bash
-if [ ! -f /root/.packages-installed ]; then
-    apt-get update
-    apt-get install -y ${PACKAGES_TO_INSTALL.join(' ')}
-    touch /root/.packages-installed
-fi
-`;
 
 const WEBVM_FILES = {
   debian: 'https://github.com/leaningtech/webvm/releases/download/ext2_image/debian_mini_20230519_5022088024.ext2',
@@ -52,9 +35,8 @@ async function main() {
   const ctfDir = path.join(publicDir, 'ctf');
   await fs.mkdir(ctfDir, { recursive: true });
   
-  // Create startup and challenge files
+  // Create challenge files
   const challengeFiles = {
-    'startup.sh': STARTUP_SCRIPT,
     '.bashrc': `
 # CTF Environment Setup
 PS1='\\u@webvm:\\w\\$ '
