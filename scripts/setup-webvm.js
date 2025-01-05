@@ -3,13 +3,23 @@ import fs from 'fs/promises';
 import path from 'path';
 import { execSync } from 'child_process';
 
-// Add packages you want pre-installed
+// Packages to install on first boot
 const PACKAGES_TO_INSTALL = [
   'vim',
   'git',
   'python3',
   // Add more packages as needed
 ];
+
+// Create startup script to install packages
+const STARTUP_SCRIPT = `
+#!/bin/bash
+if [ ! -f /root/.packages-installed ]; then
+    apt-get update
+    apt-get install -y ${PACKAGES_TO_INSTALL.join(' ')}
+    touch /root/.packages-installed
+fi
+`;
 
 const WEBVM_FILES = {
   debian: 'https://webvm.io/fs/debian-minimal.ext2',
@@ -23,40 +33,6 @@ async function downloadFile(url, destination) {
   await fs.writeFile(destination, buffer);
 }
 
-async function customizeImage(imagePath) {
-  const mountPoint = '/tmp/webvm-temp';
-  const sparseImage = '/tmp/debian-sparse.dmg';
-  
-  console.log('Customizing debian image...');
-  
-  try {
-    // Create a temporary sparse disk image
-    execSync(`hdiutil convert -format UDRW -o ${sparseImage} ${imagePath}`);
-    
-    // Mount the sparse image
-    execSync(`hdiutil attach ${sparseImage}.dmg -mountpoint ${mountPoint}`);
-    
-    // Install packages using arch-chroot or similar
-    console.log('Warning: Package installation not yet implemented for macOS');
-    // TODO: Implement package installation for macOS
-    
-    // Unmount and cleanup
-    execSync(`hdiutil detach ${mountPoint}`);
-    execSync(`rm ${sparseImage}.dmg`);
-    
-    console.log('Image customization completed (note: package installation skipped)');
-  } catch (error) {
-    console.error('Error customizing image:', error);
-    // Ensure cleanup even if there's an error
-    try {
-      execSync(`hdiutil detach ${mountPoint}`);
-      execSync(`rm ${sparseImage}.dmg`);
-    } catch (e) {
-      // Ignore cleanup errors
-    }
-    throw error;
-  }
-}
 
 async function main() {
   const publicDir = path.join(process.cwd(), 'public', 'webvm');
@@ -70,18 +46,15 @@ async function main() {
     const filePath = path.join(publicDir, filename);
     await downloadFile(url, filePath);
     
-    // If this is the debian image, customize it
-    if (key === 'debian') {
-      await customizeImage(filePath);
-    }
   }
 
   // Create CTF challenge files
   const ctfDir = path.join(publicDir, 'ctf');
   await fs.mkdir(ctfDir, { recursive: true });
   
-  // Create initial challenge files
+  // Create startup and challenge files
   const challengeFiles = {
+    'startup.sh': STARTUP_SCRIPT,
     '.bashrc': `
 # CTF Environment Setup
 PS1='\\u@webvm:\\w\\$ '
