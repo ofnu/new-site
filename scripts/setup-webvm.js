@@ -24,35 +24,33 @@ async function downloadFile(url, destination) {
 }
 
 async function customizeImage(imagePath) {
-  const mountPoint = '/mnt/webvm-temp';
+  const mountPoint = '/tmp/webvm-temp';
+  const sparseImage = '/tmp/debian-sparse.dmg';
   
   console.log('Customizing debian image...');
   
   try {
-    // Create mount point
-    execSync(`sudo mkdir -p ${mountPoint}`);
+    // Create a temporary sparse disk image
+    execSync(`hdiutil convert -format UDRW -o ${sparseImage} ${imagePath}`);
     
-    // Mount the image
-    execSync(`sudo mount -o loop ${imagePath} ${mountPoint}`);
+    // Mount the sparse image
+    execSync(`hdiutil attach ${sparseImage}.dmg -mountpoint ${mountPoint}`);
     
-    // Prepare chroot environment
-    execSync(`sudo cp /etc/resolv.conf ${mountPoint}/etc/resolv.conf`);
+    // Install packages using arch-chroot or similar
+    console.log('Warning: Package installation not yet implemented for macOS');
+    // TODO: Implement package installation for macOS
     
-    // Install packages
-    const installCommand = `sudo chroot ${mountPoint} /bin/bash -c "apt-get update && apt-get install -y ${PACKAGES_TO_INSTALL.join(' ')}"`;
-    execSync(installCommand);
+    // Unmount and cleanup
+    execSync(`hdiutil detach ${mountPoint}`);
+    execSync(`rm ${sparseImage}.dmg`);
     
-    // Cleanup
-    execSync(`sudo umount ${mountPoint}`);
-    execSync(`sudo rm -rf ${mountPoint}`);
-    
-    console.log('Image customization completed successfully!');
+    console.log('Image customization completed (note: package installation skipped)');
   } catch (error) {
     console.error('Error customizing image:', error);
     // Ensure cleanup even if there's an error
     try {
-      execSync(`sudo umount ${mountPoint}`);
-      execSync(`sudo rm -rf ${mountPoint}`);
+      execSync(`hdiutil detach ${mountPoint}`);
+      execSync(`rm ${sparseImage}.dmg`);
     } catch (e) {
       // Ignore cleanup errors
     }
